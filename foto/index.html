@@ -1099,13 +1099,15 @@ footer .heart{
     <div class="albums-grid" id="albumsContainer"></div>
   </section>
 
-  <!-- نافذة التكبير (Lightbox) لعرض صور الألبوم -->
+<!-- نافذة التكبير (Lightbox) لعرض صور وفيديوهات الألبوم -->
   <div id="lightbox" class="lightbox" aria-hidden="true">
     <span class="close-btn" id="closeLightbox">&times;</span>
     <button class="nav-btn prev-btn" id="prevPhoto">&#10094;</button>
     
     <div class="lightbox-content-wrapper">
       <img class="lightbox-content" id="lightboxImg" alt="Enlarged Memory">
+      <!-- أضفنا مشغل الفيديو هنا -->
+      <video class="lightbox-content" id="lightboxVideo" controls style="display: none; max-width: 100%; max-height: 75vh; border-radius: 12px; outline: none;"></video>
       <p class="lightbox-caption" id="lightboxCaption"></p>
     </div>
     
@@ -1689,11 +1691,7 @@ footer .heart{
 /* ============================================================
    ✦ 9. ALBUMS & LIGHTBOX LOGIC
    ============================================================ */
-/* ============================================================
-   ✦ 9. ALBUMS & LIGHTBOX LOGIC
-   ============================================================ */
 (function () {
-  // بيانات الألبومات لـ 12 صورة مقسمة بمسار مجلد foto وصيغة .jpeg
   const albumsData = [
     {
       id: 'album1',
@@ -1712,7 +1710,8 @@ footer .heart{
       photos: [
         { url: 'foto/4.jpeg', caption: 'Sunny days at the beach.' },
         { url: 'foto/5.jpeg', caption: 'Exploring new places and road trips.' },
-        { url: 'foto/6.mp4', caption: 'Relaxing afternoons and beautiful sunsets.' }
+        // تم تعديل رقم 6 ليكون فيديو mp4
+        { url: 'foto/6.mp4', caption: 'Relaxing afternoons and beautiful sunsets.' } 
       ]
     },
     {
@@ -1740,6 +1739,7 @@ footer .heart{
   const albumsContainer = document.getElementById('albumsContainer');
   const lightbox = document.getElementById('lightbox');
   const lightboxImg = document.getElementById('lightboxImg');
+  const lightboxVideo = document.getElementById('lightboxVideo'); // تم إضافة متغير الفيديو
   const lightboxCaption = document.getElementById('lightboxCaption');
   const closeBtn = document.getElementById('closeLightbox');
   const prevBtn = document.getElementById('prevPhoto');
@@ -1748,28 +1748,30 @@ footer .heart{
   let currentAlbumPhotos = [];
   let currentPhotoIndex = 0;
 
-  // 1. توليد الألبومات في الصفحة
   function renderAlbums() {
     albumsData.forEach((album) => {
       const card = document.createElement('div');
       card.className = 'album-card';
       
-      // بناء الهيكل الداخلي لكارت الألبوم
+      // التحقق مما إذا كان الغلاف نفسه فيديو (اختياري)
+      const isCoverVideo = album.coverImg.endsWith('.mp4');
+      const coverMedia = isCoverVideo 
+        ? `<video src="${album.coverImg}" class="album-cover" muted loop playsinline autoplay></video>`
+        : `<img src="${album.coverImg}" alt="${album.title}" class="album-cover">`;
+
       card.innerHTML = `
-        <img src="${album.coverImg}" alt="${album.title}" class="album-cover">
+        ${coverMedia}
         <div class="album-info">
           <h3 class="album-title">${album.title}</h3>
-          <span class="album-count">${album.photos.length} Photos</span>
+          <span class="album-count">${album.photos.length} Items</span>
         </div>
       `;
       
-      // عند الضغط على الألبوم، افتح الصور الخاصة به
       card.addEventListener('click', () => openAlbumLightbox(album.photos));
       albumsContainer.appendChild(card);
     });
   }
 
-  // 2. فتح نافذة التكبير لألبوم معين
   function openAlbumLightbox(photos) {
     if (!photos || photos.length === 0) return;
     currentAlbumPhotos = photos;
@@ -1777,20 +1779,33 @@ footer .heart{
     updateLightboxContent();
     
     lightbox.classList.add('active');
-    document.body.style.overflow = 'hidden'; // منع التمرير في الخلفية
+    document.body.style.overflow = 'hidden'; 
   }
 
-  // 3. تحديث الصورة والنص المعروض
+  // الدالة المعدلة لعرض الصورة أو الفيديو بذكاء
   function updateLightboxContent() {
     const photo = currentAlbumPhotos[currentPhotoIndex];
-    lightboxImg.src = photo.url;
     lightboxCaption.textContent = photo.caption || '';
+
+    if (photo.url.endsWith('.mp4')) {
+      // إخفاء الصورة وإظهار مشغل الفيديو
+      lightboxImg.style.display = 'none';
+      lightboxVideo.style.display = 'block';
+      lightboxVideo.src = photo.url;
+      lightboxVideo.play();
+    } else {
+      // إخفاء الفيديو وإظهار الصورة
+      lightboxVideo.style.display = 'none';
+      lightboxVideo.pause(); 
+      lightboxImg.style.display = 'block';
+      lightboxImg.src = photo.url;
+    }
   }
 
-  // 4. التنقل والإغلاق
   function closeLightbox() {
     lightbox.classList.remove('active');
     document.body.style.overflow = 'auto';
+    lightboxVideo.pause(); // إيقاف الفيديو عند إغلاق النافذة
   }
 
   function showNext() {
@@ -1803,19 +1818,16 @@ footer .heart{
     updateLightboxContent();
   }
 
-  // 5. ربط الأحداث (Event Listeners)
   closeBtn.addEventListener('click', closeLightbox);
   nextBtn.addEventListener('click', (e) => { e.stopPropagation(); showNext(); });
   prevBtn.addEventListener('click', (e) => { e.stopPropagation(); showPrev(); });
 
-  // الإغلاق عند الضغط خارج الصورة
   lightbox.addEventListener('click', (e) => {
     if (e.target === lightbox || e.target.classList.contains('lightbox-content-wrapper')) {
       closeLightbox();
     }
   });
 
-  // التحكم من خلال الكيبورد
   document.addEventListener('keydown', (e) => {
     if (!lightbox.classList.contains('active')) return;
     if (e.key === 'Escape') closeLightbox();
@@ -1823,11 +1835,8 @@ footer .heart{
     if (e.key === 'ArrowLeft') showPrev();
   });
 
-  // تشغيل دالة بناء الألبومات عند تحميل الصفحة
   renderAlbums();
 })();
-
-
    
 })();
 </script>

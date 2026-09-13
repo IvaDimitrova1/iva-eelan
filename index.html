@@ -1686,51 +1686,50 @@ footer .heart{
   }, { passive: true });
 
 
-
 /* ============================================================
    ✦ 9. ALBUMS & LIGHTBOX LOGIC
    ============================================================ */
 (function () {
-  // بيانات الألبومات الخاصة بك
+  // بيانات الألبومات الخاصة بك مع تعديل صيغة الصور إلى .jpeg
   const albumsData = [
     {
       id: 'album1',
       title: 'First Date Memories',
-      coverImg: 'images/1.jpg',
+      coverImg: 'images/1.jpeg',
       photos: [
-        { url: '1.jpg', caption: 'Where it all began - coffee and non-stop laughter.' },
-        { url: '2.jpg', caption: 'Strolling through the botanical gardens in late afternoon.' },
-        { url: '3.jpg', caption: 'Evening lights and unforgettable conversations.' }
+        { url: 'images/1.jpeg', caption: 'Where it all began - coffee and non-stop laughter.' },
+        { url: 'images/2.jpeg', caption: 'Strolling through the botanical gardens in late afternoon.' },
+        { url: 'images/3.jpeg', caption: 'Evening lights and unforgettable conversations.' }
       ]
     },
     {
       id: 'album2',
       title: 'Summer Getaway',
-      coverImg: 'images/4.jpg',
+      coverImg: 'images/4.jpeg',
       photos: [
-        { url: '4.jpg', caption: 'Sunny days at the beach.' },
-        { url: 'images/5.jpg', caption: 'Exploring new places and road trips.' },
-        { url: 'images/6.jpg', caption: 'Relaxing afternoons and beautiful sunsets.' }
+        { url: 'images/4.jpeg', caption: 'Sunny days at the beach.' },
+        { url: 'images/5.jpeg', caption: 'Exploring new places and road trips.' },
+        { url: 'images/6.jpeg', caption: 'Relaxing afternoons and beautiful sunsets.' }
       ]
     },
     {
       id: 'album3',
       title: 'Weekend Adventures',
-      coverImg: 'images/7.jpg',
+      coverImg: 'images/7.jpeg',
       photos: [
-        { url: 'images/7.jpg', caption: 'Hiking through the nature trails.' },
-        { url: 'images/8.jpg', caption: 'Campfire stories and starry nights.' },
-        { url: 'images/9.jpg', caption: 'Morning coffee with a great view.' }
+        { url: 'images/7.jpeg', caption: 'Hiking through the nature trails.' },
+        { url: 'images/8.jpeg', caption: 'Campfire stories and starry nights.' },
+        { url: 'images/9.jpeg', caption: 'Morning coffee with a great view.' }
       ]
     },
     {
       id: 'album4',
       title: 'Special Celebrations',
-      coverImg: 'images/10.jpg',
+      coverImg: 'images/10.jpeg',
       photos: [
-        { url: 'images/10.jpg', caption: 'Cherished moments with family and friends.' },
-        { url: 'images/11.jpg', caption: 'Laughter, joy, and unforgettable memories.' },
-        { url: 'images/12.jpg', caption: 'Looking forward to many more chapters.' }
+        { url: 'images/10.jpeg', caption: 'Cherished moments with family and friends.' },
+        { url: 'images/11.jpeg', caption: 'Laughter, joy, and unforgettable memories.' },
+        { url: 'images/12.jpeg', caption: 'Looking forward to many more chapters.' }
       ]
     }
   ];
@@ -1825,6 +1824,8 @@ footer .heart{
   renderAlbums();
 })();
 
+
+   
 })();
 </script>
 
